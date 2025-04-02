@@ -3,16 +3,20 @@
 import { pipeline } from '@xenova/transformers'
 import type { NextApiRequest, NextApiResponse } from 'next'
 
-let classifier: any = null
+declare global {
+	var classifier: any | null
+}
+
+globalThis.classifier ||= null
 
 async function loadModel() {
-	if (!classifier) {
-		classifier = await pipeline(
+	if (!globalThis.classifier) {
+		globalThis.classifier = await pipeline(
 			'sentiment-analysis',
 			'Xenova/distilbert-base-uncased-finetuned-sst-2-english'
 		)
 	}
-	return classifier
+	return globalThis.classifier
 }
 
 async function getSentimentScore(text: string): Promise<number> {
